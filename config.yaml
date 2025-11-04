@@ -1,0 +1,78 @@
+# AI Competitive Intelligence Configuration
+
+scraping:
+  request_delay_min: 2  # seconds
+  request_delay_max: 5  # seconds
+  max_retries: 3
+  timeout: 30
+
+user_agents:
+  - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  - "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+
+sources:
+  tier1:
+    - name: "OpenAI Blog"
+      url: "https://openai.com/blog"
+      rss: "https://openai.com/blog/rss.xml"
+      selectors:
+        articles: "article"
+        title: "h3, h2"
+        link: "a"
+        date: "time"
+
+    - name: "Anthropic News"
+      url: "https://www.anthropic.com/news"
+      rss: "https://www.anthropic.com/news/rss.xml"
+      selectors:
+        articles: "article, .news-item"
+        title: "h2, h3"
+        link: "a"
+        date: "time, .date"
+
+    - name: "Hugging Face Blog"
+      url: "https://huggingface.co/blog"
+      rss: "https://huggingface.co/blog/feed.xml"
+      selectors:
+        articles: "article, .blog-post"
+        title: "h2, h3"
+        link: "a"
+        date: "time, .date"
+
+    - name: "Google AI Blog"
+      url: "https://ai.googleblog.com"
+      rss: "https://blog.google/technology/ai/rss/"
+      selectors:
+        articles: ".post"
+        title: "h2.title"
+        link: "a"
+        date: ".published"
+
+  tier2:
+    - name: "MIT Technology Review AI"
+      url: "https://www.technologyreview.com/topic/artificial-intelligence/"
+      rss: "https://www.technologyreview.com/feed/"
+      selectors:
+        articles: "article"
+        title: "h2, h3"
+        link: "a"
+        date: "time"
+
+    - name: "The Verge AI"
+      url: "https://www.theverge.com/ai-artificial-intelligence"
+      rss: "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml"
+      selectors:
+        articles: "article"
+        title: "h2"
+        link: "a"
+        date: "time"
+
+output:
+  reports_dir: "reports"
+  data_dir: "data"
+  formats:
+    - markdown
+    - json
+    - html
