@@ -44,11 +44,14 @@ sources:
     - name: "Google AI Blog"
       url: "https://ai.googleblog.com"
       rss: "https://blog.google/technology/ai/rss/"
+      priority: "high"
+      tags: ["research", "products", "gemini"]
       selectors:
         articles: ".post"
         title: "h2.title"
         link: "a"
         date: ".published"
+        description: ".post-snippet"
 
   tier2:
     - name: "MIT Technology Review AI"

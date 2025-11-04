@@ -122,7 +122,7 @@ class WebScraper:
         self.content_processor = ContentProcessor()
         self.articles = []
 
-    def scrape_rss(self, url: str, source_name: str) -> List[Dict]:
+    def scrape_rss(self, url: str, source_name: str, source_config: Dict = None) -> List[Dict]:
         """Scrape RSS feed (preferred method when available)"""
         logger.info(f"Scraping RSS feed: {source_name}")
         articles = []
@@ -139,9 +139,15 @@ class WebScraper:
                     'scrape_method': 'rss'
                 }
 
+                # Add priority and tags if available
+                if source_config:
+                    article['priority'] = source_config.get('priority', 'normal')
+                    article['tags'] = source_config.get('tags', [])
+
                 if not self.content_processor.is_duplicate(article['title']):
                     articles.append(article)
-                    logger.info(f"  ✓ {article['title'][:60]}...")
+                    priority_marker = "🔥" if article.get('priority') == 'high' else ""
+                    logger.info(f"  ✓ {priority_marker} {article['title'][:60]}...")
 
         except Exception as e:
             logger.error(f"RSS parsing failed for {source_name}: {e}")
@@ -211,7 +217,7 @@ class WebScraper:
 
         # Try RSS first if available
         if 'rss' in source:
-            articles = self.scrape_rss(source['rss'], source['name'])
+            articles = self.scrape_rss(source['rss'], source['name'], source)
             if articles:
                 return articles
 
@@ -389,6 +395,19 @@ Generated: {timestamp}
         a:hover {{
             text-decoration: underline;
         }}
+        .priority-high {{
+            border-left: 4px solid #ff6b6b;
+            background: #fff9f9;
+        }}
+        .tag {{
+            background: #e8f4fd;
+            color: #0066cc;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-right: 5px;
+            display: inline-block;
+        }}
     </style>
 </head>
 <body>
@@ -415,7 +434,29 @@ Generated: {timestamp}
     <h2>Latest Intelligence</h2>
 """
 
-        for article in articles:
+        # Separate high priority and normal articles
+        high_priority = [a for a in articles if a.get('priority') == 'high']
+        normal_articles = [a for a in articles if a.get('priority') != 'high']
+
+        # Show high priority first
+        if high_priority:
+            html += '<h2>🔥 High Priority Updates</h2>'
+            for article in high_priority:
+                tags_html = ' '.join([f'<span class="tag">{tag}</span>' for tag in article.get('tags', [])])
+                html += f"""
+    <div class="article-card priority-high">
+        <span class="source-badge">{article['source']}</span>
+        <div class="article-title">🔥 {article['title']}</div>
+        <div class="article-meta">
+            {tags_html}
+            <a href="{article['url']}" target="_blank">Read Article →</a> |
+            {article['date']}
+        </div>
+    </div>
+"""
+
+        html += '<h2>Latest Intelligence</h2>'
+        for article in normal_articles:
             html += f"""
     <div class="article-card">
         <span class="source-badge">{article['source']}</span>
